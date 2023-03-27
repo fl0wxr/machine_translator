@@ -203,7 +203,7 @@ For the evaluation of this model the two metrics that have been used were the lo
 - The second axis specifies the state's step, or the token's position inside the output sequence denoted by $j$.
 - The third axis specifies the dimensionality of the output, coinciding with the target vocabularies size denoted by $k$.
 
-Define $\mathcal{M}$ to be the rank 3 tensor having the same size as $f$, but where all its values are set to be $1$, except the positions where the final axis corresponds to `<pad>` where $\mathcal{M}$ is set to be $0$. To be precise, in the target language's vocabulary, the index of `<pad>` is $1$. Hence all values in $\mathcal{M}\_{*,*,1}$ are set to $0$.
+Define $\mathcal{M}$ to be the rank 3 tensor having the same size as $f$, but where all its values are set to be $1$, except the positions where the final axis corresponds to `<pad>` where $\mathcal{M}$ is set to be $0$. To be precise, in the target language's vocabulary, the index of `<pad>` is $1$. Hence all values in $\mathcal{M}\_{:,:,1}$ are set to $0$.
 $$\mathcal{L}(f,\hat{f}) = - \frac{400}{\sum \mathcal{M}} \cdot \sum \big( \mathcal{M} \odot \big( f \odot \log(\hat{f} + \epsilon) \big) \big)$$
 $\epsilon$ is set to $10^{-20}$ and is used to prevent the function $\log$ from accepting the $0$ value, as distribution functions belong to the interval $[0,1]$ that includes $0$. Take the subset of 32 bit floating numbers that belong to that interval and we now have a finite set. This makes it likely that $0$ will be encountered in $\hat{f}$, during the training or even during predictions. That is why $\epsilon$ was added to $\hat{f}$. $\mathcal{M}$ is used to mask the tensor $f \odot \log(\hat{f} + \epsilon \big)$, because we don't want additional loss to be accumulated due to sequence positions where paddings should have been predicted at. In the above expression $\sum$ sums all its input-tensor's values.
 
@@ -271,7 +271,7 @@ For every gram size $g$ (either $1$ or $2$), define $p\_g^{(i)}$ to be the corre
 $$p_1^{(i)} = \frac{1+2+1+1}{11} = \frac{6}{11}, \ \ \ \ \ \ p_2^{(i)} = \frac{1+1}{10} = \frac{2}{10}.$$
 
 Now BLEU is computed as
-$$\text{BLEU} = \frac{1}{m} \cdot \sum_{i=0}^{m-1} \bigg( \exp \bigg( \min \bigg( \bigg \{ 0, 1- \frac{\text{len}^{(i)}}{\text{len}^{(i)}_{\text{pred}}} \bigg \} \bigg) \bigg) \cdot \prod_{g=1}^{2} (p_g^{(i)})^{1/2^g} \bigg).$$
+$$\text{BLEU} = \frac{1}{m} \cdot \sum_{i=0}^{m-1} \bigg( \exp \bigg( \min \bigg( \bigg \{ 0, 1- \frac{\text{len}^{(i)}}{\text{len}^{(i)}_{\text{pred}}} \bigg \} \bigg) \bigg) \cdot \prod\_{g=1}^{2} (p_g^{(i)})^{1/2^g} \bigg).$$
 
 BLEU was implemented in a way so that it does not take into account the `<unk>` token. Hence if `<unk>` exists inside any $g$-gram, that $g$-gram will not contribute to the score at all. The higher the BLEU of two sequences, the more identical they are. If two sequences are exactly the same, then BLEU will equal $1$ for that specific example. The exponent of $p\_g^{(i)}$ in the above relation, "weights" $p\_g^{(i)}$ more when $g$ is increased.
 
