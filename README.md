@@ -2,8 +2,6 @@
 
 ## Introduction
 
----
-
 What is the meaning behind a text? How do we humans interpret it? It definitely feels like a straightforward thing for us to infer meaning out of text, but is it really that straightforward? What was the necessary process we had to go through to internalize the implicit rules that led us to the point that we could read? That is what nature's analog machine, consisted of a sizeable set of interconnected biological neurons (~100 billion nodes, ~100 trillion connections), is capable of. That is what the human brain does, and given the rate of technological advancement and the exponential rate of data availability, it is only a matter of time before humans will completely unearth its hidden powers.
 
 A sentence can be interpreted in multiple ways and expressed in even more ways. Because of that, the boundary between a right and a wrong translation is fuzzy. As a result, we expect that the very nature of the translation problem to intrinsically employ an unavoidable error. The error of lexical ambiguity. This kind of error is comparable to the inevitable noise that measurement devices capture. Thankfully neural networks and their training processes are able to bypass such errors under normal circumstances.
@@ -32,8 +30,6 @@ The current project is a highly configurable tool, suitable for training machine
 It goes without saying that althought the current project's approach takes advantage of modern methodologies, it achieves trivial results compared to masterpieces like *Google Translate* [[5][googletranslate]] or *DeepL Translator* [[6][deepl]]. machine_translator's development was heavily relied on *Dive into Deep Learning* [[7][d2l]]. A model has been trained in order to demonstrate the software's capabilities and limitations, as well as to gain some insights about sequence-to-sequence processing in general.
 
 ## English to Greek Translation
-
----
 
 The task at hand is the translation of sentences between the english and greek languages. To achieve this, we have used a dataset we refer to as *ell*.
 
@@ -349,8 +345,6 @@ Comparing the BLEU metric between the training and validation set (see Figure 7)
 
 ## Setup
 
----
-
 ### Linux Terminal
 
 The computer is required to be equipped with an NVIDIA GPU with Cuda installed on its OS. To verify you have Cuda installed you expect
@@ -428,8 +422,6 @@ will ask for permission to access your google drive's directories. Give that acc
 
 ## Training Checkpoints
 
----
-
 During training, the models and information about their trainings are systematically saved inside `./training`, stored in a `.pt` file. For every epoch, an image file named as
 ```
 <model_name>_live.png
@@ -506,8 +498,6 @@ For a given epoch, its training state may be saved inside `./training` under the
 ```
 
 ## Experimental Conclusion and Software Improvements
-
----
 
 It seems like an increased minibatch size leads to better trainings and faster convergence. Additionally, the `<unk>` token should not be that frequently encountered, and especially in sequences where it is located close to the start. Also, allowing wider sequences with more tokens is definitely a way to increase performance. Additionally, any kind of regularization technique used, like dropout, did more harm than good to the final model's performance, that is why we did not implement `s2s_ell` using dropout.
 
