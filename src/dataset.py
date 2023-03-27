@@ -1,6 +1,6 @@
 """
 Description:
-    Text parsing and processing of translations are sourced from https://www.manythings.org/anki/.
+    Text parsing and processing of translations. The translations are sourced from https://www.manythings.org/anki/.
 
     The following special string-tokens are defined as
     '<unk>': Unknown token,
