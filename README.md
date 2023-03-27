@@ -151,7 +151,7 @@ with $k_{\text{in}}$ and $k_{\text{out}}$ being the current layer's number of in
 
 <br />
 
-During testing, the pipeline depicted in Figure 4 obviously cannot predict sequences with unknown target outputs because the decoder has no predefined input. Figure 5 shows the autoregressive pipeline of `s2s_ell` used for predictions, which is the version of `s2s_ell` intended to be trained during the training process. We'll refer to this pipeline as `s2s_ell_pred`. For each $t \in \{ 0, \dots, 9-1 \}$ state, on the decoder, the input is set as the output distribution $\hat{f}_{t-1}$ of its corresponding previous state. This resembles the deterministic greedy search approach where each state $t$ accepts a token $\text{argmax}_{ j }(\hat{f}_{t-1})$ instead, where $j \in \{ 0, \dots, 4039-1 \}$.
+During testing, the pipeline depicted in Figure 4 obviously cannot predict sequences with unknown target outputs because the decoder has no predefined input. Figure 5 shows the autoregressive pipeline of `s2s_ell` used for predictions, which is the version of `s2s_ell` intended to be trained during the training process. We'll refer to this pipeline as `s2s_ell_pred`. For each $t \in \\{ 0, \dots, 9-1 \\}$ state, on the decoder, the input is set as the output distribution $\hat{f}\_{t-1}$ of its corresponding previous state. This resembles the deterministic greedy search approach where each state $t$ accepts a token $\text{argmax}\_{ j }(\hat{f}\_{t-1})$ instead, where $j \in \\{ 0, \dots, 4039-1 \\}$.
 
 <br />
 
@@ -203,11 +203,11 @@ For the evaluation of this model the two metrics that have been used were the lo
 - The second axis specifies the state's step, or the token's position inside the output sequence denoted by $j$.
 - The third axis specifies the dimensionality of the output, coinciding with the target vocabularies size denoted by $k$.
 
-Define $\mathcal{M}$ to be the rank 3 tensor having the same size as $f$, but where all its values are set to be $1$, except the positions where the final axis corresponds to `<pad>` where $\mathcal{M}$ is set to be $0$. To be precise, in the target language's vocabulary, the index of `<pad>` is $1$. Hence all values in $\mathcal{M}_{*,*,1}$ are set to $0$.
+Define $\mathcal{M}$ to be the rank 3 tensor having the same size as $f$, but where all its values are set to be $1$, except the positions where the final axis corresponds to `<pad>` where $\mathcal{M}$ is set to be $0$. To be precise, in the target language's vocabulary, the index of `<pad>` is $1$. Hence all values in $\mathcal{M}\_{*,*,1}$ are set to $0$.
 $$\mathcal{L}(f,\hat{f}) = - \frac{400}{\sum \mathcal{M}} \cdot \sum \big( \mathcal{M} \odot \big( f \odot \log(\hat{f} + \epsilon) \big) \big)$$
 $\epsilon$ is set to $10^{-20}$ and is used to prevent the function $\log$ from accepting the $0$ value, as distribution functions belong to the interval $[0,1]$ that includes $0$. Take the subset of 32 bit floating numbers that belong to that interval and we now have a finite set. This makes it likely that $0$ will be encountered in $\hat{f}$, during the training or even during predictions. That is why $\epsilon$ was added to $\hat{f}$. $\mathcal{M}$ is used to mask the tensor $f \odot \log(\hat{f} + \epsilon \big)$, because we don't want additional loss to be accumulated due to sequence positions where paddings should have been predicted at. In the above expression $\sum$ sums all its input-tensor's values.
 
-BLEU on the other hand, is a metric that belongs in the interval $[0,1]$. This version of BLEU is specified in the following way. Suppose that for an example $i$ out of $m$ examples, $\text{len}^{(i)}$ is the length of the ground truth sequence $f$ starting from the first token, up to the token before the `<eos>` token, while $\text{len}_{\text{pred}}^{(i)}$ is the same kind of length but applied on the predicted sequence $\hat{f}$ instead. Drop all tokens after `<eos>` including that token too. Contruct collections of g-grams for all $g \in \{ 1, 2 \}$. E.g.
+BLEU on the other hand, is a metric that belongs in the interval $[0,1]$. This version of BLEU is specified in the following way. Suppose that for an example $i$ out of $m$ examples, $\text{len}^{(i)}$ is the length of the ground truth sequence $f$ starting from the first token, up to the token before the `<eos>` token, while $\text{len}\_{\text{pred}}^{(i)}$ is the same kind of length but applied on the predicted sequence $\hat{f}$ instead. Drop all tokens after `<eos>` including that token too. Contruct collections of g-grams for all $g \in \{ 1, 2 \}$. E.g.
 
 Full sequence
 ```
@@ -267,13 +267,13 @@ The same is done for 2-grams
 
 <br />
 
-For every gram size $g$ (either $1$ or $2$), define $p_g^{(i)}$ to be the corresponding table's row summed and divided by the length of the associated collection of the prediction's $g$-gram. We get
+For every gram size $g$ (either $1$ or $2$), define $p\_g^{(i)}$ to be the corresponding table's row summed and divided by the length of the associated collection of the prediction's $g$-gram. We get
 $$p_1^{(i)} = \frac{1+2+1+1}{11} = \frac{6}{11}, \ \ \ \ \ \ p_2^{(i)} = \frac{1+1}{10} = \frac{2}{10}.$$
 
 Now BLEU is computed as
 $$\text{BLEU} = \frac{1}{m} \cdot \sum_{i=0}^{m-1} \bigg( \exp \bigg( \min \bigg( \bigg \{ 0, 1- \frac{\text{len}^{(i)}}{\text{len}^{(i)}_{\text{pred}}} \bigg \} \bigg) \bigg) \cdot \prod_{g=1}^{2} (p_g^{(i)})^{1/2^g} \bigg).$$
 
-BLEU was implemented in a way so that it does not take into account the `<unk>` token. Hence if `<unk>` exists inside any $g$-gram, that $g$-gram will not contribute to the score at all. The higher the BLEU of two sequences, the more identical they are. If two sequences are exactly the same, then BLEU will equal $1$ for that specific example. The exponent of $p_g^{(i)}$ in the above relation, "weights" $p_g^{(i)}$ more when $g$ is increased.
+BLEU was implemented in a way so that it does not take into account the `<unk>` token. Hence if `<unk>` exists inside any $g$-gram, that $g$-gram will not contribute to the score at all. The higher the BLEU of two sequences, the more identical they are. If two sequences are exactly the same, then BLEU will equal $1$ for that specific example. The exponent of $p\_g^{(i)}$ in the above relation, "weights" $p\_g^{(i)}$ more when $g$ is increased.
 
 Now that the metrics were defined, we can proceed with the description of the training/experiment. The results of this training (see Figure 7) are certainly interesting, however it has to be admitted that `s2s_ell` does not apply that well to external data.
 
