@@ -271,7 +271,7 @@ For every gram size $g$ (either $1$ or $2$), define $p\_g^{(i)}$ to be the corre
 $$p_1^{(i)} = \frac{1+2+1+1}{11} = \frac{6}{11}, \ \ \ \ \ \ p_2^{(i)} = \frac{1+1}{10} = \frac{2}{10}.$$
 
 Now BLEU is computed as
-$$\text{BLEU} = \frac{1}{m} \cdot \sum_{i=0}^{m-1} \bigg( \exp \bigg( \min \bigg( \bigg \{ 0, 1- \frac{\text{len}^{(i)}}{\text{len}^{(i)}_{\text{pred}}} \bigg \} \bigg) \bigg) \cdot \prod\_{g=1}^{2} (p_g^{(i)})^{1/2^g} \bigg).$$
+$$\text{BLEU} = \frac{1}{m} \cdot \sum_{i=0}^{m-1} \bigg( \exp \bigg( \min \bigg( \bigg \\{ 0, 1- \frac{\text{len}^{(i)}}{\text{len}^{(i)}_{\text{pred}}} \bigg \\} \bigg) \bigg) \cdot \prod\_{g=1}^{2} (p_g^{(i)})^{1/2^g} \bigg).$$
 
 BLEU was implemented in a way so that it does not take into account the `<unk>` token. Hence if `<unk>` exists inside any $g$-gram, that $g$-gram will not contribute to the score at all. The higher the BLEU of two sequences, the more identical they are. If two sequences are exactly the same, then BLEU will equal $1$ for that specific example. The exponent of $p\_g^{(i)}$ in the above relation, "weights" $p\_g^{(i)}$ more when $g$ is increased.
 
