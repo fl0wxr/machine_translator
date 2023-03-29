@@ -507,7 +507,7 @@ It seems like an increased minibatch size leads to better trainings and faster c
 
 A critical factor to consider when judging the preceding results, is that the validation set is not a good enough representation of external data. One may argue that the training vs validation set split is random, and thus we cannot know that. However by looking at the dataset, it is almost certain that the validation set is composed of data identical to the training set, making it a biased set, unable to provide us with enough information to evaluate the model's ability to generalize. As a consequence, the real overfitting is definitely way worse than the one implied by the metrics' differences between the two sets.
 
-It all comes down to the dataset's size. Perhaps 5000000 examples would suffice. The selection of validation examples, has to be selected randomly, and independently of the training set. Also in large datasets one would need a lot of memory and the training is obviously expected to take a lot longer.
+It all comes down to the dataset's size. Perhaps 5000000 examples would suffice. The selection of validation examples has to be selected randomly, and independently of the training set. Also in large datasets one would need a lot of memory and the training is obviously expected to take a lot longer.
 
 
 
