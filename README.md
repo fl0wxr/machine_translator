@@ -402,18 +402,22 @@ python3 predict.py
 
 ### Jupyter Notebook
 
-One way to make the Jupyter Notebook functional in a google colab environment in GPU runtime, one needs the following google drive file hierarchy.
+One way to make the Jupyter Notebook functional in a google colab environment in GPU runtime:
+1. Create the following google drive directory hierarchy
 ```
 MyDrive [Google drive's uppermost directory]
-   |---Colab Notebooks [Location of .ipynb]
+   |---Colab Notebooks [.ipynb files]
    |
    |---colab_storage
                 |---datasets
-                |---scripts
-                |---lib
+                |---scripts [.c files]
+                |---lib [.so files]
                 |---training
 ```
-After you create this hierarchy, the rest is then handled by the notebook. Note that the first executable snippet
+2. Copy `./src/machine_translator.ipynb` from this repository to the google drive's directory `MyDrive/Colab Notebooks`.
+3. Copy `./src/preprocessing_tools.c` to `MyDrive/colab_storage/scripts`.
+
+After you create this hierarchy and copy the files, the rest is up to the jupyter kernel. Note that the first executable snippet
 ```
 from google.colab import drive
 drive.mount('/content/drive')
@@ -527,14 +531,14 @@ The training definitely lacks a lot of data, maybe a sufficient number of 500000
 
 
 
-[chatgpt]: <https://openai.com/blog/chatgpt> <!-- 1 -->
-[bing]: <https://www.bing.com/new> <!-- 2 -->
-[bard]: <https://bard.google.com/> <!-- 3 -->
-[rivalries]: <https://www.theverge.com/2023/2/7/23587767/microsoft-google-open-ai-battle-search-bing> <!-- 4 -->
-[googletranslate]: <https://translate.google.gr> <!-- 5 -->
-[deepl]: <https://www.deepl.com/translator/l/> <!-- 6 -->
-[d2l]: <https://d2l.ai/d2l-en.pdf> <!-- 7 -->
-[ell]: <https://www.manythings.org/anki/ell-eng.zip> <!-- 8 -->
-[google_colab]: <https://colab.research.google.com/> <!-- 9 -->
-[beam_search]: <https://aclanthology.org/J03-1005.pdf> <!-- 10 -->
+[chatgpt]: <https://openai.com/blog/chatgpt>
+[bing]: <https://www.bing.com/new>
+[bard]: <https://bard.google.com/>
+[rivalries]: <https://www.theverge.com/2023/2/7/23587767/microsoft-google-open-ai-battle-search-bing>
+[googletranslate]: <https://translate.google.gr>
+[deepl]: <https://www.deepl.com/translator/l/>
+[d2l]: <https://d2l.ai/d2l-en.pdf>
+[ell]: <https://www.manythings.org/anki/ell-eng.zip>
+[google_colab]: <https://colab.research.google.com/>
+[beam_search]: <https://aclanthology.org/J03-1005.pdf>
 
