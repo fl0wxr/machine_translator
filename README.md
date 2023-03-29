@@ -17,7 +17,7 @@ The context of word definitions, their connotation and grammatical rules are som
 <div align="center">
     <img width="400pt" src="https://raw.githubusercontent.com/fl0wxr/machine_translator/master/readme_content/enc_dec.png">
 </div>
-<div style="text-align: center; font-size: 80%">
+<div align="center">
     Figure 1. Source [<a href="https://d2l.ai/d2l-en.pdf">1</a>]. The encoder-decoder pipeline.
 </div>
 
@@ -44,11 +44,11 @@ She left her ticket at home.	Άφησε το εισιτήριο στο σπίτ�
 ...
 ```
 
-The file that is primarily responsible for the parsing of the dataset as well as its preprocessing is `./src/dataset.py`.
+The file that is primarily responsible for the parsing of the dataset as well as its preprocessing, is `./src/dataset.py`.
 
 ### Initial Corpus Preprocessing
 
-Obviously, the part that begins with `CC-BY 2.0` was dropped from the raw text. The characters `,.!?;` are all considered as tokens. Words like `walk` and `walking`, although they are the same *base word* in different *forms*, here we consider no grammatical structure, hence `walk` and `walking` will be defined as two distinct word entities.
+Obviously, the part that begins with `CC-BY 2.0` was dropped from the raw text. The characters `,.!?;` are all considered as tokens. No grammatical structure is explicitly considered here, hence words like `walk` and `walking`, although they share the same *base word*, will be treated as two distinct word entities.
 
 ### Main Corpus Preprocessing
 
@@ -64,26 +64,26 @@ with corresponding target sequences
 Σκόπευε να πάει για ψώνια .
 Άφησε το εισιτήριο στο σπίτι .
 ```
-Additionally, a token (i.e. the smallest unit inside a sequence associable with a context) will be considered to be equivalent to a word.
+Additionally, a token (i.e. the smallest unit inside a sequence associable with a context) will be treated as equivalent to a word.
 
 The preceding definitions now allow us to inspect the data from a clear viewpoint. In total, there are 17499 translations with varying sequence sizes, where the majority of them ranges from 4 to 11 tokens per sentence (see Figure 2).
 
-To simplify the processing of data, all sequences in each language share the same length. The two distributions of Figure 2 seem to be almost identical, hence it makes sense to set the same length for both languages. That `max_steps_seq` length is set to be 9. All sequences that had more than 9 tokens were cropped to match this length, while all sequences that had less than 9 tokens, were filled with a repeating padding token `<pad>` until the size was 9. Additionally, for all sequences, before their paddings (if they have any), end with the special end of sequence token `<eos>`.
+To simplify the processing of data, all the preprocessed sequences in each language share the same length. The two distributions of Figure 2 seem to be almost identical, hence it makes sense to set the same length for both languages. That `max_steps_seq` length is set to be 9. All sequences that had more than 9 tokens were cropped to match this length, while all sequences that had less than 9 tokens, were filled with a repeating padding token `<pad>` until the size was 9. Additionally, for all sequences, before their paddings (if they have any), end with the special end of sequence token `<eos>`.
 
 <br />
 
 <div align="center">
     <img width="500pt" src="https://raw.githubusercontent.com/fl0wxr/machine_translator/master/datasets/ell_cnt_examples_per_sentence_len.png">
 </div>
-<div style="text-align: center; font-size: 80%">
+<div align="center">
     Figure 2. Displays how many sequences share a common number of tokens in both the source language (english) and the target language (greek).
 </div>
 
 <br />
 
-Inferring the context of a low-frequency token can be challenging because there are not enough sequences to provide information about its meaning. These rare instances of a token are outliers that can mislead the training process, resulting in solution-models that are more susceptible to issues such as overfitting and reduced overall performance. An additional problem is that these low frequency tokens add to the model's complexity. Specifically the vocabularies' increase, forces an unnecessary enlargement of the sequence-to-sequence model, hence it will take longer for it to converge and given that it's more prone to overfitting, that solution is not worth the waiting. In ell the frequency of token appearances is showed in (Figure 3).
+Inferring the context of a low-frequency token can be challenging because there are not enough sequences to provide information about its meaning. These rare instances of a token are outliers that can mislead the training process, resulting in solution-models that are more susceptible to issues such as overfitting and reduced overall performance. An additional problem is that these low frequency tokens add to the model's complexity. Specifically the vocabularies' increase, forces an unnecessary enlargement of the sequence-to-sequence model, hence increasing the time required for its training to converge in satisfying solutions, and given that it's more prone to overfitting, that solution is not worth the extra wait. In ell, the frequency of token appearances is shown in Figure 3.
 
-As a result, it was decided that all tokens with frequency less or equal than 1 were redundant and hence were replaced by the special token `<unk>`. Hence the sequences
+As a result, it was decided that all tokens with frequency less than or equal to 1 were redundant and hence were replaced by the special token `<unk>`. Hence the sequences
 
 ```
 Έχει πέντε μεγαλύτερους αδερφούς .
@@ -104,15 +104,15 @@ Do not forget that the punctuation mark `.` is a separate token in each of these
 <div align="center">
     <img width="500pt" src="https://raw.githubusercontent.com/fl0wxr/machine_translator/master/datasets/ell_freq.png">
 </div>
-<div style="text-align: center; font-size: 80%">
-    Figure 3. These plots display the relation between token indices and the number of their instance-appearance inside the dataset, in logarithmic scale. Each number in horizontal axis represents a token's index sorted in decreasing order with respect to their frequency of appearance inside the dataset.
+<div align="center">
+    Figure 3. These plots display the relations between token indices and the number of their instance-appearance inside the dataset, in logarithmic scale. Each number on the horizontal axis represents a token's index sorted in decreasing order with respect to their frequency of appearance inside the dataset.
 </div>
 
 <br />
 
 The resulting integer-index vocabularies were built with respect to the token frequency sorted in a decreasing order. Hence words like `the` will have a far lower index than the word `ticket`. One hot encoding (OHE) was incorporated minibatch-wise during the training, instead of prior to the training, due to the excessive memory requirement.
 
-Some of these preprocessing routines used on the dataset are computationally demanding and conventional python routines are substantially slowing down the initialization of trainings. That is where C and `ctypes` come in handy. Hence the most demanding preprocessing transformations were handled by `./src/preprocessing_tools.c`, offering processing speedups up to $\times287$. These transformations are
+Some of these preprocessing routines used on the dataset are computationally demanding and conventional python routines are substantially slowing down the initialization of trainings. That is where C and `ctypes` come in handy. The more demanding preprocessing transformations were handled by `./src/preprocessing_tools.c`, offering processing speedups up to $\times287$. These transformations are
 
 - `arstr2num`: Conversion of all the dataset's strings into vocabulary indices.
 - `pad_or_trim`: Sequence padding and sequence trimming.
@@ -128,13 +128,13 @@ Finally, as soon as the data preprocessing finishes, a `torch.utils.data.TensorD
 
 ### Architectures and Training Process
 
-After an extensive effort of hyperparameter tuning, the following design was chosen to carry out the training. The trainable pipeline used in this work is an encoder-decoder RNN, as shown in Figure 4, which is a teacher forcing implementation. This specific pipeline will be named as `s2s_ell_train`. Each of the decoder's initial states was set to the special beginning-of-sequence token `<bos>`.
+After an extensive effort of hyperparameter tuning, the following design was selected to carry out the training. The trainable pipeline is a teacher forcing encoder-decoder RNN specified in Figure 4. This particular pipeline will be named as `s2s_ell_train`. Each of the decoder's initial states were set to be the special beginning-of-sequence token `<bos>`.
 
-The RNN's architecture is consisted of GRUs and dense layers, where each was set to output 600 neurons, except from the output layer with output size equal to 4039. The latter were used to build the embedding layers in both the encoder and decoder, the target language's sequence reconstruction layer towards the end of the pipeline, and the decoder's output layer right after the reconstruction layer. GRUs on the other hand, have been proved to effectively infer the input sequence's context while incorporating temporal information. The output layer (i.e. the decoder's output layer) uses the Softmax activation function to produce the target vocabularies distribution.
+The RNN's architecture is consisted of GRUs and dense layers, where each was set to output 600 neurons, except from the output layer with output size equal to 4039 (size of the target vocabulary). The dense layers were used as embedding layers in both the encoder and decoder, the target language's sequence reconstruction layer towards the end of the pipeline, and the decoder's output layer right after that reconstruction layer. On the other hand, GRUs have been proven beneficial as hidden layers, as they effectively infer the input sequence's context while incorporating temporal information. The output layer (i.e. the decoder's output layer) uses the Softmax activation function to produce the target vocabularies distribution.
 
-Both the encoder and decoder consist of 2 stacked GRU layers. All of the encoder GRUs' initial states were set to zero tensors, while the decoder GRUs' initial states were set as the corresponding final states of the encoder's GRU layers. Hence, the initial state of the decoder's first GRU layer was assigned to be the final state of the encoder's first GRU layer, while the initial state of the decoder's second GRU layer was assigned to be the final state of the encoder's second GRU layer. Another design choice is that the context tensor was assigned as the output tensor produced by the final layer of the encoder. During decoding, for a given state, the context tensor is concatenated with the previous state's output along the token-wise feature axis.
+Both the encoder and decoder consist of 2 stacked GRU layers. All of the encoder GRUs' initial states are set to zero tensors, while the decoder GRUs' initial states are set as the corresponding final states of the encoder's GRU layers. Hence, the initial state of the decoder's first GRU layer is assigned to be the final state of the encoder's first GRU layer, while the initial state of the decoder's second GRU layer is assigned to be the final state of the encoder's second GRU layer. Another design choice is that the context tensor is assigned as the output tensor produced by the final layer of the encoder. During decoding, for a given state, the context tensor is concatenated with the previous state's output along the token-wise feature axis.
 
-From the trainable parameters of these layers, each bias $\mathcal{B}$ was initialized to zero tensors and each weight $\mathcal{W}$ was sampled from a uniform Xavier distribution. Specifically
+From the trainable parameters of these layers, each bias $\mathcal{B}$ was initialized to a zero tensor and each weight $\mathcal{W}$ was sampled from a uniform Xavier distribution. Specifically
 $$\mathcal{W} \sim U(-b,b)$$
 where
 $$b := \sqrt{3} \cdot \sqrt{\frac{2}{k_{\text{in}}+k_{\text{out}}}}$$
@@ -145,26 +145,26 @@ with $k_{\text{in}}$ and $k_{\text{out}}$ being the current layer's number of in
 <div align="center">
     <img width="700pt" src="https://raw.githubusercontent.com/fl0wxr/machine_translator/master/readme_content/seq2seq_teacher_forcing.png">
 </div>
-<div style="text-align: center; font-size: 80%">
+<div align="center">
     Figure 4. The teacher forcing <code>s2s_ell</code> pipeline. All dropout layers were shut down during the training.
 </div>
 
 <br />
 
-During testing, the pipeline depicted in Figure 4 obviously cannot predict sequences with unknown target outputs because the decoder has no predefined input. Figure 5 shows the autoregressive pipeline of `s2s_ell` used for predictions, which is the version of `s2s_ell` intended to be trained during the training process. We'll refer to this pipeline as `s2s_ell_pred`. For each $t \in \\{ 0, \dots, 9-1 \\}$ state, on the decoder, the input is set as the output distribution $\hat{f}\_{t-1}$ of its corresponding previous state. This resembles the deterministic greedy search approach where each state $t$ accepts a token $\text{argmax}\_{ j }(\hat{f}\_{t-1})$ instead, where $j \in \\{ 0, \dots, 4039-1 \\}$.
+During testing, the pipeline depicted in Figure 4 obviously cannot predict sequences with unknown target outputs because the decoder has no available predefined decoder-inputs (or targets). Figure 5 shows the autoregressive pipeline of `s2s_ell` used for predictions, which is the version of `s2s_ell` intended to be trained during the training process. We'll refer to this pipeline as `s2s_ell_pred`. For each $t \in \\{ 0, \dots, 9-1 \\}$ of the decoder's state, the decoder's input is assigned to be the output distribution $\hat{f}\_{t-1}$ of its corresponding previous state $t-1$. This resembles the deterministic greedy search approach where each state $t$ accepts a token $\text{argmax}\_{ j }(\hat{f}\_{t-1})$, where $j \in \\{ 0, \dots, 4039-1 \\}$.
 
 <br />
 
 <div align="center">
     <img width="700pt" src="https://raw.githubusercontent.com/fl0wxr/machine_translator/master/readme_content/seq2seq_prediction_pipeline.png">
 </div>
-<div style="text-align: center; font-size: 80%">
+<div align="center">
     Figure 5. <code>s2s_ell</code> predicts using this pipeline, allowing for the final model's predictions. Its usage extends on the model's evaluation. It's worth noting that the parameters of <code>dec.Dense</code> (from Figure 4), <code>dec.Dense1</code>, <code>dec.Dense2</code>, ..., <code>dec.DenseT_tgt-1</code> are all the same.
 </div>
 
 <br />
 
-For `s2s_ell`'s trainable parameter updates, Adam is the responsible optimization algorithm that was selected for this training. The initial learning rate of Adam was set 0.005 and for each training step, the minibatch size was set to 2<sup>10</sup>. Categorical cross entropy was selected to be the loss function, as it works well with the output layer's softmax activation. Furthermore, to prevent potential gradient explosions during the training, gradient clipping was used to limit the gradient's Frobenius norm. To specify, after the gradients are computed, for every trainable parameter tensor $\mathcal{P}$, we have
+For `s2s_ell`'s trainable parameter updates, Adam is the responsible optimization algorithm that was selected for this training. The initial learning rate of Adam was set to 0.005 and for each training step, the minibatch size was set to 2<sup>10</sup>. Categorical cross entropy was selected to be the trainer's loss function, as it works well with the output layer's softmax activation. Furthermore, to prevent potential gradient explosions during the training, gradient clipping was used to limit the gradient's Frobenius norm. To specify, after the gradients are computed, every trainable parameter tensor $\mathcal{P}$ is updated as
 
 $$\mathcal{P} := \bigg( \sum_{\mathbf{q}} \mathcal{P}_{\mathbf{q}}^2 \bigg)^{0.5}$$
 
@@ -172,7 +172,7 @@ where $\mathbf{q}$ is the index vector of $\mathcal{P}$ iterating on all its ele
 
 ### Hardware Specs
 
-The training was carried out on a Google Colab [[3][google_colab]] machine using a Tesla T4 GPU - 16 GB VRAM, Intel(R) Xeon(R) CPU (2.20GHz) - 12.7 GB RAM. The following software versions were used:
+The training was carried out on a Google Colab [[9][google_colab]] machine using a Tesla T4 GPU - 16 GB VRAM, Intel(R) Xeon(R) CPU (2.20GHz) - 12.7 GB RAM. The following software versions were used:
 
 - Python v3.9.16
 - CUDA v12.0
@@ -180,7 +180,7 @@ The training was carried out on a Google Colab [[3][google_colab]] machine using
 
 ### Predictor
 
-During prediction time, it seems that `s2s_ell_pred` brings better results than greedy or beam search. The only property that differs between `s2s_ell_pred` and greedy search, is that `s2s_ell_pred` feeds the next recurrent state with the previous state's token prediction, instead of the corresponding distribution function. The reason that greedy search was worse is because it was losing too much information in each step's *rounding*. For a given state, by dropping all the probabilities to `0` and selecting the token with the highest one, we achieve only to reduce the information of how wrong or how right each token is as an input to the next state. Additionally, multiple configurations of Beam search were tested, with various *beam graphs*, but to no avail. Beam search was implemented so that in every possibility of its graph, in each recurrent state, the input would be an unaffected distribution function without taking its $\text{argmax}$ like what is done in greedy search. Regardless, these predictions always led to distinctly worse results, where the target sequences were ending way too early.
+During prediction time, it seems that `s2s_ell_pred` leads to better results than greedy or beam search [[10][beam_search]]. The only property that differs between `s2s_ell_pred` and greedy search, is that `s2s_ell_pred` feeds the next recurrent state with the previous state's token prediction, instead of the corresponding distribution function. The reason that greedy search was worse is because it was losing too much information in each step's $\text{argmax}$ step. Additionally, multiple configurations of beam search were tested, with various *beam graphs*, but to no avail. Beam search was implemented so that in every possibility of its graph, in each recurrent state, the input would be an unaffected distribution function without taking its $\text{argmax}$ like what is done in greedy search. Regardless, these predictions always led to distinctly worse results, where the target sequences were ending prematurely.
 
 Moreover, during prediction time, after `s2s_ell_pred` generates a distribution, for each state, the probabilities of `<unk>`, `<pad>` and `<bos>`, are substituted by `0`. Then the removed probability quantities are added up and distributed equally to the rest of the probabilities (see Figure 6). This is identical to the action of shrinking the sample space i.e. finding a *conditional* random variable. This is implemented in `trivialize_irrelevant_possibilities` located in the `./src/predictor.py` file. Therefore even if `<unk>` has the highest probability after the model's output, no `<unk>` words will appear in the final target-token predictions, forcing the predictor to come up with some other token (except `<pad>` and `<bos>`) instead.
 
@@ -189,7 +189,7 @@ Moreover, during prediction time, after `s2s_ell_pred` generates a distribution,
 <div align="center">
     <img width="780pt" src="https://raw.githubusercontent.com/fl0wxr/machine_translator/master/readme_content/trivialize_probs.png">
 </div>
-<div style="text-align: center; font-size: 80%">
+<div align="center">
     Figure 6. This is an example of how the predictor handles the output of a model that produces a distribution. The target's vocabulary is consisted of <code>του</code>, <code>τομ</code>, <code>αρέσει</code>, <code>.</code>, <code>το</code>, <code>&lteos&gt</code>, <code>&ltpad&gt</code>, <code>&ltbos&gt</code>, <code>&ltunk&gt</code>.
 </div>
 
@@ -321,7 +321,7 @@ Maybe the model overfits or maybe not. We can't be sure by looking at these exam
 <div align="center">
     <img width="700pt" src="https://raw.githubusercontent.com/fl0wxr/machine_translator/master/training/ell/s2s_ell_ep110.png">
 </div>
-<div style="text-align: center; font-size: 80%">
+<div align="center">
     Figure 7. Evaluation metrics on both the training pipeline (<code>training_pipeline</code> = <code>s2s_ell_train</code>) as seen on the left column, and on the prediction pipeline (<code>id2_pipeline</code> = <code>s2s_ell_pred</code>) as seen on the right column. <code>loss</code> refers to the categorical cross entropy loss function, and <code>bleu</code> is our implementation of the BLEU metric. <code>etr &ltmetric&gt</code> refers to the minibatch-wise <code>&ltmetric&gt</code> measurement on the training set, while <code>val &ltmetric&gt</code> is a measurement of <code>&ltmetric&gt</code> on the validation set, where <code>&ltmetric&gt</code> is either <code>loss</code> or <code>bleu</code>.
 </div>
 
@@ -527,13 +527,14 @@ The training definitely lacks a lot of data, maybe a sufficient number of 500000
 
 
 
-[d2l]: <https://d2l.ai/d2l-en.pdf>
-[chatgpt]: <https://openai.com/blog/chatgpt>
-[bing]: <https://www.bing.com/new>
-[bard]: <https://bard.google.com/>
-[googletranslate]: <https://translate.google.gr>
-[deepl]: <https://www.deepl.com/translator/l/>
-[rivalries]: <https://www.theverge.com/2023/2/7/23587767/microsoft-google-open-ai-battle-search-bing>
-[ell]: <https://www.manythings.org/anki/ell-eng.zip>
-[google_colab]: <https://colab.research.google.com/>
+[chatgpt]: <https://openai.com/blog/chatgpt> <!-- 1 -->
+[bing]: <https://www.bing.com/new> <!-- 2 -->
+[bard]: <https://bard.google.com/> <!-- 3 -->
+[rivalries]: <https://www.theverge.com/2023/2/7/23587767/microsoft-google-open-ai-battle-search-bing> <!-- 4 -->
+[googletranslate]: <https://translate.google.gr> <!-- 5 -->
+[deepl]: <https://www.deepl.com/translator/l/> <!-- 6 -->
+[d2l]: <https://d2l.ai/d2l-en.pdf> <!-- 7 -->
+[ell]: <https://www.manythings.org/anki/ell-eng.zip> <!-- 8 -->
+[google_colab]: <https://colab.research.google.com/> <!-- 9 -->
+[beam_search]: <https://aclanthology.org/J03-1005.pdf> <!-- 10 -->
 
