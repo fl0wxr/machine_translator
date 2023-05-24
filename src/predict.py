@@ -52,7 +52,7 @@ def data_sample_evaluation(translator):
 device = torch.device('cuda')
 
 ## The file containing a model
-training_path = '../training/ell/s2s_ell_opt.pt'
+training_path = '../training/ell/s2s_ell_ep110.pt'
 
 training = torch.load(training_path, map_location=device)
 
