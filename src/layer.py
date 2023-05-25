@@ -5,6 +5,10 @@ import weight_initializer
 
 
 class dense(nn.Module):
+    '''
+    Description:
+        Positionwise dense layer. A generalization of the traditional dense-fully-connected layer which instead assumes an input of shape (n_examples, n_inp). The current layer applies that same operation for each input step, by using the same trainable parameters on each input step.
+    '''
 
     def __init__(self, n_inp, n_out, n_steps, device, dropout_rate=0.0):
 
